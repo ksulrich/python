@@ -12,7 +12,21 @@ class Greeting(db.Model):
     content = db.StringProperty(multiline=True)
     date = db.DateTimeProperty(auto_now_add=True)
 
-class MainPage(webapp.RequestHandler):
+class IndexPage(webapp.RequestHandler):
+    def get(self):
+        template_values = {
+            'greeting_app': "Greeting App",
+            'greeting_url': "/greeting",
+            'degree_app': "Degree to Fahrenheit calculator",
+            'degree_url': "/tempfc",
+            'env_app': "Print Environment",
+            'env_url': "/environment",
+            }
+
+        path = os.path.join(os.path.dirname(__file__), 'index.html')
+        self.response.out.write(template.render(path, template_values))
+
+class GreetingPage(webapp.RequestHandler):
     def get(self):
         greetings_query = Greeting.all().order('-date')
         greetings = greetings_query.fetch(10)
@@ -30,7 +44,7 @@ class MainPage(webapp.RequestHandler):
             'url_linktext': url_linktext,
             }
 
-        path = os.path.join(os.path.dirname(__file__), 'index.html')
+        path = os.path.join(os.path.dirname(__file__), 'greeting.html')
         self.response.out.write(template.render(path, template_values))
 
 class Guestbook(webapp.RequestHandler):
@@ -42,17 +56,27 @@ class Guestbook(webapp.RequestHandler):
 
         greeting.content = self.request.get('content')
         greeting.put()
-        self.redirect('/')
+        self.redirect('/greeting')
 
 class PrintEnvironmentHandler(webapp.RequestHandler):
     def get(self):
         for name in os.environ.keys():
             self.response.out.write("%s = %s<br />\n" % (name, os.environ[name]))
 
+class DegreeFahrenheitCalculator(webapp.RequestHandler):
+    def get(self):
+        template_values = {
+            }
+
+        path = os.path.join(os.path.dirname(__file__), 'degreefahrenheit.html')
+        self.response.out.write(template.render(path, template_values))
+
 application = webapp.WSGIApplication(
-                                     [('/', MainPage),
+                                     [('/', IndexPage),
+                                      ('/greeting', GreetingPage),
                                       ('/sign', Guestbook),
- 				      ('/environment', PrintEnvironmentHandler)],
+ 				      ('/environment', PrintEnvironmentHandler),
+                                      ('/tempfc', DegreeFahrenheitCalculator)],
                                      debug=True)
 
 def main():
