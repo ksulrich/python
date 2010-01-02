@@ -19,6 +19,8 @@ class IndexPage(webapp.RequestHandler):
             'greeting_url': "/greeting",
             'degree_app': "Degree to Fahrenheit calculator",
             'degree_url': "/tempfc",
+            'kilo_app': "Convert Kilo and Pounds",
+            'kilo_url': "/kilopounds",
             'env_app': "Print Environment",
             'env_url': "/environment",
             }
@@ -71,12 +73,22 @@ class DegreeFahrenheitCalculator(webapp.RequestHandler):
         path = os.path.join(os.path.dirname(__file__), 'degreefahrenheit.html')
         self.response.out.write(template.render(path, template_values))
 
+class KiloToPoundsCalculator(webapp.RequestHandler):
+    def get(self):
+        template_values = {
+            }
+
+        path = os.path.join(os.path.dirname(__file__), 'kilogram_pounds.html')
+        self.response.out.write(template.render(path, template_values))
+
 application = webapp.WSGIApplication(
                                      [('/', IndexPage),
                                       ('/greeting', GreetingPage),
                                       ('/sign', Guestbook),
  				      ('/environment', PrintEnvironmentHandler),
-                                      ('/tempfc', DegreeFahrenheitCalculator)],
+                                      ('/tempfc', DegreeFahrenheitCalculator),
+                                      ('/kilopounds', KiloToPoundsCalculator),
+                                      ],
                                      debug=True)
 
 def main():
