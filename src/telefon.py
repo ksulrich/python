@@ -35,7 +35,7 @@ def main():
                 # first entry
                 text = ""
             else:
-                # enty ended -> search for pattern
+                # entry ended -> search for pattern
                 #print "TEXT:", text
                 found = True
                 for p in pats:
