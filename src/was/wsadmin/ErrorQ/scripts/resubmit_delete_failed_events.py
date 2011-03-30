@@ -1,7 +1,7 @@
 import javax.management as mgmt 
 import time
 
-AdminControl.trace( 'com.ibm.wbimonitor.*=all=enabled' )
+#AdminControl.trace( 'com.ibm.wbimonitor.*=all=enabled' )
 
 ################################################
 # Start doing work 
@@ -12,11 +12,8 @@ AdminControl.trace( 'com.ibm.wbimonitor.*=all=enabled' )
 # administrative console and <versionDate> with the model version date, 
 # in the format YYYYMMDDHHMMSS.
 
-#myModel = '<modelID>'
-#myVersion = ' <versionDate>'
-
-myModel = 'TestMonitor_MM3'
-myVersion = '20101020112930'
+myModel = '<modelID>'
+myVersion = ' <versionDate>'
 
 eqmb = AdminControl.queryNames('WebSphere:type=ErrorQ,*')
 modelVer = AdminControl.invoke(eqmb, 'getModelVersion', '[' + myModel + ' ' + myVersion + ']')
@@ -30,19 +27,14 @@ eqObjNameString = AdminControl.completeObjectName('WebSphere:type=ErrorQ,*')
 eqObjName = mgmt.ObjectName(eqObjNameString) 
 
 ## Begin delete failed events ##                  
-#instancesByDBID = AdminControl.invoke(eq, 'listFailedInstances', '[' + modelDBID + ']').split(lineSeparator)                  
-instancesByDBID = AdminControl.invoke(eqmb, 'listFailedInstances', '[' + modelDBID + ']').split(lineSeparator)                  
+instancesByDBID = AdminControl.invoke(eq, 'listFailedInstances', '[' + modelDBID + ']').split(lineSeparator)                  
 for instance in instancesByDBID :
     instance = instance.split('[')[1]
     instance = instance.split(']')[0]
-    print "instance=", instance
-    #eventIds = AdminControl.invoke(eq, 'listFailedEventIds', '[' + instance + ']').split(lineSeparator)
-    eventIds = AdminControl.invoke(eqmb, 'listFailedEventIds', '[' + instance + ']').split(lineSeparator)
-    print "eventIds=", eventIds
+    eventIds = AdminControl.invoke(eq, 'listFailedEventIds', '[' + instance + ']').split(lineSeparator)
     for eventId in eventIds :
         if eventId != '' :
-            print "delete ", eventId
-            #AdminControl.invoke(eq, 'deleteEvents', '[' + instance + ' ' + eventId + ']')
+            AdminControl.invoke(eq, 'deleteEvents', '[' + instance + ' ' + eventId + ']')
 ## End delete failed events ##
 
 ## Begin delete failed instances ##
@@ -59,9 +51,6 @@ instList = AdminControl.invoke_jmx(eqObjName, 'listFailedInstances', parms, sign
 # Loop through the list of InstanceBeans
 if instList != None:
     for inst in instList:
-        rootInstId = inst.getRootInstanceId()
-        #rootInstId = rootInstId.replace(";", ";")
-        print "rootInstId=", rootInstId
-        AdminControl.invoke(eqmb, 'resetEventSequenceInstance', '["' + myModel + '" ' + myVersion + ' "' + rootInstId + '"]')
+        AdminControl.invoke(eq, 'resetEventSequenceInstance', '["' + myModel + '" ' + myVersion + ' "' + inst.getRootInstanceId() + '"]')
 ## End delete failed instances ##
 
