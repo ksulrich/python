@@ -29,12 +29,10 @@ eqmb = AdminControl.queryNames('WebSphere:type=ErrorQ,*')
 # For example, "ModelVersionBean[528EA96DB0791FADB3C36397]ClaimProcessingTracker.20100302111955"
 
 modelVer = AdminControl.invoke(eqmb, 'getModelVersion', '[' + myModel + ' ' + myVersion + ']')
-print 'modelVer= '
-print modelVer
+print 'modelVer= ', modelVer
 temp1 = modelVer.split('[')[1]
 modelDBID = temp1.split(']')[0]
-print 'modelDBID='
-print modelDBID
+print 'modelDBID=', modelDBID
 
 # ------------------------------------------
 # Get the ErrorQ MBean another way
@@ -63,6 +61,6 @@ if instanceList != None:
 			for event in eventList:
 				print 'Event DBID=' + event.getId() + ', GUID=' + event.getGlobalUniqueInstanceId()
 				# Delete the failed event
+                                REMARK: Only the events get deleted. The entry in the failed events view are still there
 				AdminControl.invoke(eqmb, 'deleteEvents', '[' + instance.getId() + ' ' + event.getId() + ']')
-
 print 'The script has finished'

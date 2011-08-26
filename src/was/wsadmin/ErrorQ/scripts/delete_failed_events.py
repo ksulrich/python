@@ -1,8 +1,16 @@
 import javax.management as mgmt 
-import time
-from com.ibm.wbimonitor.lifecycle.spi import LifecycleVersionDate
 
 AdminControl.trace( 'com.ibm.wbimonitor.*=all=enabled' )
+
+# Only delete maxEvents for one failed instance in one run
+# if set to -1, all failed events gets deleted in one run
+# and the failed instances gets resetted
+maxEvents = -1 # delete all
+
+if len(sys.argv) > 0:
+    maxEvents = int(sys.argv[0])
+
+print "Process only ", maxEvents, "for every instance"
 
 ################################################
 # Start doing work 
@@ -13,10 +21,8 @@ AdminControl.trace( 'com.ibm.wbimonitor.*=all=enabled' )
 # administrative console and <versionDate> with the model version date, 
 # in the format YYYY-MM-DDTHH:MM:SS as it is shown in the admin console
 
-myModel = 'SimpleShopMM'
-myVersion = '20101228145435'
-
-#versionDate = LifecycleVersionDate.parse( myVersionDate )
+myModel = 'ClipsAndTacks'
+myVersion = '20070911120730'
 
 eqmb = AdminControl.queryNames('WebSphere:type=ErrorQ,*')
 modelVer = AdminControl.invoke(eqmb, 'getModelVersion', '[' + myModel + ' ' + myVersion + ']')
@@ -28,24 +34,29 @@ eqObjNameString = AdminControl.completeObjectName('WebSphere:type=ErrorQ,*')
 eqObjName = mgmt.ObjectName(eqObjNameString) 
 
 ## Begin delete failed events ##                  
-#instancesByDBID = AdminControl.invoke(eq, 'listFailedInstances', '[' + modelDBID + ']').split(lineSeparator)                  
 instancesByDBID = AdminControl.invoke(eqmb, 'listFailedInstances', '[' + modelDBID + ']').split(lineSeparator)                  
 for instance in instancesByDBID :
     instance = instance.split('[')[1]
     instance = instance.split(']')[0]
     print "instance=", instance
-    #eventIds = AdminControl.invoke(eq, 'listFailedEventIds', '[' + instance + ']').split(lineSeparator)
     eventIds = AdminControl.invoke(eqmb, 'listFailedEventIds', '[' + instance + ']').split(lineSeparator)
     print "eventIds=", eventIds
-    for eventId in eventIds :
-        if eventId != '' :
-            print "delete ", eventId
-            AdminControl.invoke(eqmb, 'deleteEvents', '[' + instance + ' ' + eventId + ']')
+    counter = 0
+    for eventId in eventIds:
+        if counter < maxEvents:
+            if eventId != '':
+                print "delete ", eventId
+                AdminControl.invoke(eqmb, 'deleteEvents', '[' + instance + ' ' + eventId + ']')
+                counter += 1
 ## End delete failed events ##
+
+if maxEvents != -1:
+    print "Only deleted", maxEvents, "failed events for every instance"
+    print "You might need to rerun the script"
+    sys.exit(0)
 
 ## Begin delete failed instances ##
 # Get the MBean
-import javax.management as mgmt 
 eqObjNameString = AdminControl.completeObjectName('WebSphere:type=ErrorQ,*') 
 eqObjName = mgmt.ObjectName(eqObjNameString)
 
