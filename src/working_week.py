@@ -6,20 +6,24 @@
 import sys
 import datetime
 
-found = False
-week = 0
+def main():
+    found = False
+    week = 0
 
-for line in sys.stdin:
-    date, hours = line.split()
-    year, month, day = date.split('-')
-    #print "xxx:", year, month, day, "->", hours
-    day = datetime.date(int(year), int(month), int(day))
-    if (day.weekday() == 0):
-        if (found):
-            print "From %s to %s -> %1.1f hours" % (monday, lastday, float(week)/10)
-        found = True;
-        week = int(hours)
-        monday = day;
-    elif (found):
-        week += int(hours)
-        lastday = day
+    for line in sys.stdin:
+        date, hours = line.split()
+        year, month, day = date.split('-')
+        #print "xxx:", year, month, day, "->", hours
+        day = datetime.date(int(year), int(month), int(day))
+        if (day.weekday() == 0):
+            if (found):
+                print "From %s to %s -> %1.1f hours" % (monday, lastday, float(week) / 10)
+            found = True
+            week = int(hours)
+            monday = day
+        elif (found):
+            week += int(hours)
+            lastday = day
+
+if __name__ == "__main__":
+    main()
