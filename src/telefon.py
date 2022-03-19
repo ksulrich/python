@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # $Id$
 #
 # Usage: ./telefon.py $HOME/Wissen/telefon.txt <pattern>
@@ -14,14 +14,14 @@ linePat = re.compile("^---")
 
 # we need at least the file and one pattern
 if len(sys.argv) <= 2:
-    print """
+    print("""
     Usage: telefon.py <telefon> <pattern_1> <pattern_2> ...  <pattern_n>
        where <pattern_i> is a regular expression like "ul.*"
        The patterns are ANDed, so you can search for that:
        ./telefon.py telefon.txt klaus "ul.*"
        and you are searching for klaus (case does not matter) AND 
        any word starting with ul 
-        """
+        """)
     sys.exit(1)
 
 # The file is the first argument
@@ -55,8 +55,8 @@ def run():
                         found = False
                 if found:
                     # all the pattern did match with the text, print it
-                    print "%s" %(79*"-")
-                    print "%s" % text,
+                    print("%s" %(79*"-"))
+                    print("%s" % text,)
                 # we finished the entry and need to reset text
                 text = ""
         elif text is not None:
