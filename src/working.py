@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -10,12 +10,12 @@ FILE = DB + os.sep + FILE_EXT
 
 def calc():
     dict = read_data()
-    keys = dict.keys()
+    keys = list(dict.keys())
     keys.sort()
     for k in keys:
-        print k, dict.get(k)
+        print("%s %3.1d" % (k, dict.get(k))) 
 #    for k, v in dict.iteritems():
-#        print k, v
+#        print k, v 
 
 def read_data():
     d = {}
@@ -24,12 +24,12 @@ def read_data():
             continue 
         date, value = i.strip().split()
         v = int(value)
-        #print date,'->', v
-        if d.has_key(date):
+        #print("XXX: ", date,'->', v)
+        if date in d:
             d[date] = d[date] + v
         else:
             d[date] = v
-        #print 'Now: ', date, '->', d[date]
+        print('Now: ', date, '->', d[date])
     return d
 
 def main():
